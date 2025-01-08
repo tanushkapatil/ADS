@@ -14,8 +14,9 @@ class Tree {
         TreeNode *root;
         Tree(); 
         void insert(int value);
-        void insert(TreeNode*& root, int value); // Recursive helper function
+        void insert(TreeNode*& root, int value); 
         void inOrder(TreeNode* root);
+        void create();  
 };
 
 Tree::Tree() { 
@@ -44,40 +45,54 @@ void Tree::inOrder(TreeNode* root) {
     }
 }
 
-int main() {
-    Tree tree;
+void Tree::create() {
     int choice, value;
-
     do {
-        cout << "\n--- Menu ---\n";
-        cout << "1. Insert a node into the tree\n";
-        cout << "2. Display in-order traversal\n";
-        cout << "3. Exit\n";
+        cout << "\n--- Tree Operations ---\n";
+        cout << "1. Insert multiple nodes into the tree\n";
+        cout << "2. Insert a single node into the tree\n";
+        cout << "3. Display in-order traversal\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
         switch(choice) {
             case 1:
-                cout << "Enter the value to insert: ";
-                cin >> value;
-                tree.insert(value);
-                cout << "Value inserted successfully.\n";
+                {
+                    int n;
+                    cout << "How many nodes to insert? ";
+                    cin >> n;
+                    for (int i = 0; i < n; i++) {
+                        cout << "Enter value " << (i + 1) << ": ";
+                        cin >> value;
+                        insert(value);
+                    }
+                    cout << "Nodes inserted successfully.\n";
+                }
                 break;
             case 2:
-                cout << "In-order traversal: ";
-                tree.inOrder(tree.root); 
-                cout << "\n";
+                cout << "Enter value to insert: ";
+                cin >> value;
+                insert(value);
+                cout << "Node inserted successfully.\n";
                 break;
             case 3:
+                cout << "In-order traversal: ";
+                inOrder(root); 
+                cout << "\n";
+                break;
+            case 4:
                 cout << "Exiting program.\n";
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-    } while(choice != 3); 
+    } while(choice != 4); 
+}
+
+int main() {
+    Tree tree;
+    tree.create();  
 
     return 0;
 }
-
-
-
