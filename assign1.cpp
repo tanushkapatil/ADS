@@ -44,3 +44,40 @@ void Tree::inOrder(TreeNode* root) {
     }
 }
 
+int main() {
+    Tree tree;
+    int choice, value;
+
+    do {
+        cout << "\n--- Menu ---\n";
+        cout << "1. Insert a node into the tree\n";
+        cout << "2. Display in-order traversal\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "Enter the value to insert: ";
+                cin >> value;
+                tree.insert(value);
+                cout << "Value inserted successfully.\n";
+                break;
+            case 2:
+                cout << "In-order traversal: ";
+                tree.inOrder(tree.root); 
+                cout << "\n";
+                break;
+            case 3:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while(choice != 3); 
+
+    return 0;
+}
+
+
+
