@@ -9,7 +9,7 @@
 // delete ----
     // leaf node : done
     // internal node : done
-    // intermediate node
+    // intermediate node : done
 
 #include <iostream>
 using namespace std;
@@ -97,7 +97,7 @@ void Tree::deleteNode(TreeNode* root, int key) {
                 }
                 return;
             }
-            if (current->left == nullptr || current->right == nullptr) {
+            /*if (current->left == nullptr || current->right == nullptr) {
                 if(current->right && current->left == nullptr) {
                     prev->right = current->right;
                     delete current;
@@ -106,9 +106,50 @@ void Tree::deleteNode(TreeNode* root, int key) {
                     prev->left = current->left;
                     delete current;
                 }
+            }*/
+            if (current->left == nullptr && current->right != nullptr) {
+                if (prev == nullptr) {
+                    root = current->right;
+                } else {
+                    if (prev->left == current) {
+                        prev->left = current->right;
+                    } else {
+                        prev->right = current->right;
+                    }
+                }
+                delete current;
+                return;
+            } 
+            else if (current->left != nullptr && current->right == nullptr) {
+                if (prev == nullptr) {
+                    root = current->left;
+                } else {
+                    if (prev->left == current) {
+                        prev->left = current->left;
+                    } else {
+                        prev->right = current->left;
+                    }
+                }
+                delete current;
+                return;
             }
-            if (current->left && current->right){
 
+            if (current->left && current->right){
+                TreeNode* successorParent = current;
+                TreeNode* successor = current->right;
+                while (successor->left != nullptr) {
+                    successorParent = successor;
+                    successor = successor->left;
+                }
+                current->data = successor->data;
+                if (successorParent->left == successor) {
+                    successorParent->left = successor->right;
+                } 
+                else {
+                    successorParent->right = successor->right;
+                }
+                delete successor;
+                return;
             }
         } else if (key > current->data) {
             prev = current;
@@ -189,4 +230,4 @@ int main() {
     tree.create();
 
     return 0;
-}
+} 
