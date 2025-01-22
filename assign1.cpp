@@ -1,14 +1,14 @@
-// create
-// insert
-// traversal:
-    // inorder
+// create : done
+// insert : done
+// traversal ----
+    // inorder : done
     // preorder
     // postorder
 // clone
 // mirror
-// delete:
-    // leaf node
-    // internal node
+// delete ----
+    // leaf node : done
+    // internal node : done
     // intermediate node
 
 #include <iostream>
@@ -78,44 +78,44 @@ void Tree::postOrder(TreeNode* root) {
 }
 
 void Tree::deleteNode(TreeNode* root, int key) {
-    TreeNode* temp = root;
-    TreeNode* temp1 = nullptr;
+    TreeNode* current = root;
+    TreeNode* prev = nullptr;
 
-    while (temp) {
-        if (temp->data == key) {
-            if (temp->left == nullptr && temp->right == nullptr) {
-                if (temp1 == nullptr) {
-                    delete temp;
+    while (current) {
+        if (current->data == key) {
+            if (current->left == nullptr && current->right == nullptr) {
+                if (prev == nullptr) {
+                    delete current;
                     this->root = nullptr;
                 } else {
-                    if (temp1->data > key) {
-                        temp1->left = nullptr;
+                    if (prev->data > key) {
+                        prev->left = nullptr;
                     } else {
-                        temp1->right = nullptr;
+                        prev->right = nullptr;
                     }
-                    delete temp;
+                    delete current;
                 }
                 return;
             }
-            if (temp->left == nullptr || temp->right == nullptr) {
-                if(temp->right && temp->left == nullptr) {
-                    temp1->right = temp->right;
-                    delete temp;
+            if (current->left == nullptr || current->right == nullptr) {
+                if(current->right && current->left == nullptr) {
+                    prev->right = current->right;
+                    delete current;
                 }
-                if(temp->left && temp->right == nullptr) {
-                    temp1->left = temp->left;
-                    delete temp;
+                if(current->left && current->right == nullptr) {
+                    prev->left = current->left;
+                    delete current;
                 }
             }
-            if (temp->left && temp->right){
+            if (current->left && current->right){
 
             }
-        } else if (key > temp->data) {
-            temp1 = temp;
-            temp = temp->right;
+        } else if (key > current->data) {
+            prev = current;
+            current = current->right;
         } else {
-            temp1 = temp;
-            temp = temp->left;
+            prev = current;
+            current = current->left;
         }
     }
     
