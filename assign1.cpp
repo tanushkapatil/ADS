@@ -97,6 +97,19 @@ void Tree::deleteNode(TreeNode* root, int key) {
                 }
                 return;
             }
+            if (temp->left == nullptr || temp->right == nullptr) {
+                if(temp->right && temp->left == nullptr) {
+                    temp1->right = temp->right;
+                    delete temp;
+                }
+                if(temp->left && temp->right == nullptr) {
+                    temp1->left = temp->left;
+                    delete temp;
+                }
+            }
+            if (temp->left && temp->right){
+
+            }
         } else if (key > temp->data) {
             temp1 = temp;
             temp = temp->right;
