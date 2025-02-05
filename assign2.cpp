@@ -27,7 +27,7 @@ public:
     void insert(TreeNode*& root, int value);
 
     // In-order traversal method
-    void inOrder(TreeNode* root);
+    void preOrder(TreeNode* root);
 
     // AVL Rotation methods
     TreeNode* rightRotate(TreeNode* y);
@@ -93,11 +93,11 @@ void Tree::insert(TreeNode*& root, int value) {
 }
 
 // In-order traversal (Left, Root, Right)
-void Tree::inOrder(TreeNode* root) {
+void Tree::preOrder(TreeNode* root) {
     if (root != nullptr) {
-        inOrder(root->left);
         cout << root->data << " ";
-        inOrder(root->right);
+        preOrder(root->left);
+        preOrder(root->right);
     }
 }
 
@@ -186,4 +186,3 @@ int main() {
     tree.create();
     return 0;
 }
-
