@@ -168,8 +168,8 @@ void Tree::create() {
                 cout << "Node inserted successfully.\n";
                 break;
             case 2:
-                cout << "In-Order Traversal: ";
-                inOrder(root);
+                cout << "Pre-Order Traversal: ";
+                preOrder(root);
                 cout << endl;
                 break;
             case 3:
