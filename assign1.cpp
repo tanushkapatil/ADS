@@ -2,8 +2,8 @@
 // insert : done
 // traversal ----
     // inorder : done
-    // preorder
-    // postorder
+    // preorder : done
+    // postorder : done
 // clone
 // mirror
 // delete ----
