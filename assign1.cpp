@@ -4,8 +4,8 @@
     // inorder : done
     // preorder : done
     // postorder : done
-// clone
-// mirror
+// clone : done
+// mirror : done
 // delete ----
     // leaf node : done
     // internal node : done
@@ -32,6 +32,8 @@ public:
     void preOrder(TreeNode* root);
     void postOrder(TreeNode* root);
     void deleteNode(TreeNode* root, int key);
+    TreeNode* clone(TreeNode* root);
+    void mirror(TreeNode*& root);
     void create();
 };
 
@@ -77,6 +79,21 @@ void Tree::postOrder(TreeNode* root) {
     }
 }
 
+TreeNode* Tree::clone(TreeNode* root) {
+    if (root == nullptr) return nullptr;
+    TreeNode* newNode = new TreeNode(root->data);
+    newNode->left = clone(root->left);
+    newNode->right = clone(root->right);
+    return newNode;
+}
+
+void Tree::mirror(TreeNode*& root) {
+    if (root == nullptr) return;
+    swap(root->left, root->right);
+    mirror(root->left);
+    mirror(root->right);
+}
+
 void Tree::deleteNode(TreeNode* root, int key) {
     TreeNode* current = root;
     TreeNode* prev = nullptr;
@@ -97,44 +114,21 @@ void Tree::deleteNode(TreeNode* root, int key) {
                 }
                 return;
             }
-            /*if (current->left == nullptr || current->right == nullptr) {
-                if(current->right && current->left == nullptr) {
-                    prev->right = current->right;
-                    delete current;
-                }
-                if(current->left && current->right == nullptr) {
-                    prev->left = current->left;
-                    delete current;
-                }
-            }*/
-            if (current->left == nullptr && current->right != nullptr) {
+            if (current->left == nullptr || current->right == nullptr) {
+                TreeNode* child = (current->left) ? current->left : current->right;
                 if (prev == nullptr) {
-                    root = current->right;
+                    root = child;
                 } else {
                     if (prev->left == current) {
-                        prev->left = current->right;
+                        prev->left = child;
                     } else {
-                        prev->right = current->right;
-                    }
-                }
-                delete current;
-                return;
-            } 
-            else if (current->left != nullptr && current->right == nullptr) {
-                if (prev == nullptr) {
-                    root = current->left;
-                } else {
-                    if (prev->left == current) {
-                        prev->left = current->left;
-                    } else {
-                        prev->right = current->left;
+                        prev->right = child;
                     }
                 }
                 delete current;
                 return;
             }
-
-            if (current->left && current->right){
+            if (current->left && current->right) {
                 TreeNode* successorParent = current;
                 TreeNode* successor = current->right;
                 while (successor->left != nullptr) {
@@ -144,8 +138,7 @@ void Tree::deleteNode(TreeNode* root, int key) {
                 current->data = successor->data;
                 if (successorParent->left == successor) {
                     successorParent->left = successor->right;
-                } 
-                else {
+                } else {
                     successorParent->right = successor->right;
                 }
                 delete successor;
@@ -159,7 +152,6 @@ void Tree::deleteNode(TreeNode* root, int key) {
             current = current->left;
         }
     }
-    
 }
 
 void Tree::create() {
@@ -172,7 +164,9 @@ void Tree::create() {
         cout << "4. Display pre-order traversal\n";
         cout << "5. Display post-order traversal\n";
         cout << "6. Delete a node from the tree\n";
-        cout << "7. Exit\n";
+        cout << "7. Clone the tree and display in-order traversal\n";
+        cout << "8. Mirror the tree and display in-order traversal\n";
+        cout << "9. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -216,18 +210,30 @@ void Tree::create() {
                 deleteNode(root, value);
                 cout << "Node deleted successfully.\n";
                 break;
-            case 7:
+            case 7: {
+                TreeNode* clonedRoot = clone(root);
+                cout << "Cloned tree in-order traversal: ";
+                inOrder(clonedRoot);
+                cout << "\n";
+                break;
+            }
+            case 8:
+                mirror(root);
+                cout << "Mirrored tree in-order traversal: ";
+                inOrder(root);
+                cout << "\n";
+                break;
+            case 9:
                 cout << "Exiting program.\n";
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 7);
+    } while (choice != 9);
 }
 
 int main() {
     Tree tree;
     tree.create();
-
     return 0;
-} 
+}
