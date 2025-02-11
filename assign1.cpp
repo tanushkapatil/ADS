@@ -1,4 +1,5 @@
 // create : done
+// search : done
 // insert : done
 // traversal ----
     // inorder : done
@@ -10,6 +11,7 @@
     // leaf node : done
     // internal node : done
     // intermediate node : done
+// level-wise display : done
 
 #include <iostream>
 using namespace std;
