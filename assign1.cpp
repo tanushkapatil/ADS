@@ -31,9 +31,13 @@ public:
     void inOrder(TreeNode* root);
     void preOrder(TreeNode* root);
     void postOrder(TreeNode* root);
-    void deleteNode(TreeNode* root, int key);
+    TreeNode* deleteNode(TreeNode* root, int key);
     TreeNode* clone(TreeNode* root);
     void mirror(TreeNode*& root);
+    bool search(TreeNode* root, int key);
+    int height(TreeNode* root);
+    void displayLevel(TreeNode* root, int level);
+    void levelOrderTraversal(TreeNode* root);
     void create();
 };
 
@@ -94,63 +98,63 @@ void Tree::mirror(TreeNode*& root) {
     mirror(root->right);
 }
 
-void Tree::deleteNode(TreeNode* root, int key) {
-    TreeNode* current = root;
-    TreeNode* prev = nullptr;
+bool Tree::search(TreeNode* root, int key) {
+    if (root == nullptr) return false;
+    if (root->data == key) return true;
+    if (key < root->data) return search(root->left, key);
+    return search(root->right, key);
+}
 
-    while (current) {
-        if (current->data == key) {
-            if (current->left == nullptr && current->right == nullptr) {
-                if (prev == nullptr) {
-                    delete current;
-                    this->root = nullptr;
-                } else {
-                    if (prev->data > key) {
-                        prev->left = nullptr;
-                    } else {
-                        prev->right = nullptr;
-                    }
-                    delete current;
-                }
-                return;
-            }
-            if (current->left == nullptr || current->right == nullptr) {
-                TreeNode* child = (current->left) ? current->left : current->right;
-                if (prev == nullptr) {
-                    root = child;
-                } else {
-                    if (prev->left == current) {
-                        prev->left = child;
-                    } else {
-                        prev->right = child;
-                    }
-                }
-                delete current;
-                return;
-            }
-            if (current->left && current->right) {
-                TreeNode* successorParent = current;
-                TreeNode* successor = current->right;
-                while (successor->left != nullptr) {
-                    successorParent = successor;
-                    successor = successor->left;
-                }
-                current->data = successor->data;
-                if (successorParent->left == successor) {
-                    successorParent->left = successor->right;
-                } else {
-                    successorParent->right = successor->right;
-                }
-                delete successor;
-                return;
-            }
-        } else if (key > current->data) {
-            prev = current;
-            current = current->right;
-        } else {
-            prev = current;
-            current = current->left;
+TreeNode* Tree::deleteNode(TreeNode* root, int key) {
+    if (root == nullptr) return root;
+
+    if (key < root->data) {
+        root->left = deleteNode(root->left, key);
+    } else if (key > root->data) {
+        root->right = deleteNode(root->right, key);
+    } else {
+        if (root->left == nullptr) {
+            TreeNode* temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == nullptr) {
+            TreeNode* temp = root->left;
+            delete root;
+            return temp;
         }
+
+        TreeNode* successor = root->right;
+        while (successor->left != nullptr) {
+            successor = successor->left;
+        }
+        root->data = successor->data;
+        root->right = deleteNode(root->right, successor->data);
+    }
+    return root;
+}
+
+int Tree::height(TreeNode* root) {
+    if (root == nullptr) return 0;
+    int leftHeight = height(root->left);
+    int rightHeight = height(root->right);
+    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
+}
+
+void Tree::displayLevel(TreeNode* root, int level) {
+    if (root == nullptr) return;
+    if (level == 1) {
+        cout << root->data << " ";
+    } else {
+        displayLevel(root->left, level - 1);
+        displayLevel(root->right, level - 1);
+    }
+}
+
+void Tree::levelOrderTraversal(TreeNode* root) {
+    int h = height(root);
+    for (int i = 1; i <= h; i++) {
+        displayLevel(root, i);
+        cout << endl;
     }
 }
 
@@ -166,7 +170,9 @@ void Tree::create() {
         cout << "6. Delete a node from the tree\n";
         cout << "7. Clone the tree and display in-order traversal\n";
         cout << "8. Mirror the tree and display in-order traversal\n";
-        cout << "9. Exit\n";
+        cout << "9. Search for a node\n";
+        cout << "10. Display dictionary level-wise\n";
+        cout << "11. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -207,7 +213,7 @@ void Tree::create() {
             case 6:
                 cout << "Enter value to delete: ";
                 cin >> value;
-                deleteNode(root, value);
+                root = deleteNode(root, value);
                 cout << "Node deleted successfully.\n";
                 break;
             case 7: {
@@ -224,12 +230,31 @@ void Tree::create() {
                 cout << "\n";
                 break;
             case 9:
+                cout << "Enter value to search: ";
+                cin >> value;
+                if (search(root, value)) {
+                    cout << "Value found in the dictionary.\n";
+                } else {
+                    cout << "Value not found in the dictionary.\n";
+                }
+                break;
+            case 10:
+                cout << "Dictionary displayed level-wise:\n";
+                levelOrderTraversal(root);
+                break;
+            case 11:
                 cout << "Exiting program.\n";
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 9);
+    } while (choice != 11);
+}
+
+int main() {
+    Tree tree;
+    tree.create();
+    return 0;
 }
 
 int main() {
