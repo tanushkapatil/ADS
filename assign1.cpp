@@ -262,9 +262,3 @@ int main() {
     tree.create();
     return 0;
 }
-
-int main() {
-    Tree tree;
-    tree.create();
-    return 0;
-}
