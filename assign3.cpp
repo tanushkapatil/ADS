@@ -13,6 +13,13 @@ int minKey(int key[], bool mstSet[], int V) {
     return min_index;
 }
 
+void printMST(int parent[], int graph[][100], int V) {
+    cout << "Edge \tWeight\n";
+    for (int i = 1; i < V; i++) {  
+        cout << parent[i] << " - " << i << " \t" << graph[i][parent[i]] << endl;
+    }
+}
+
 void primMST(int graph[][100], int V, int startNode) {
     int parent[V];
     int key[V];
@@ -38,13 +45,6 @@ void primMST(int graph[][100], int V, int startNode) {
         }
     }
     printMST(parent, graph, V);
-}
-
-void printMST(int parent[], int graph[][100], int V) {
-    cout << "Edge \tWeight\n";
-    for (int i = 1; i < V; i++) {  
-        cout << parent[i] << " - " << i << " \t" << graph[i][parent[i]] << endl;
-    }
 }
 
 int main(){
@@ -79,4 +79,3 @@ int main(){
     while(ch == 1);
     return 0;
 }
-
