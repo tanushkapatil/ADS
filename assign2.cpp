@@ -2,13 +2,15 @@
 using namespace std;
 
 struct TreeNode {
-    int data;
+    int player_id;
+    int score;
     TreeNode* left;
     TreeNode* right;
     int height;
 
-    TreeNode(int val) {
-        data = val;
+    TreeNode(int id, int sc) {
+        player_id = id;
+        score = sc;
         left = nullptr;
         right = nullptr;
         height = 1;
@@ -19,160 +21,193 @@ class Tree {
 public:
     TreeNode* root;
 
-    // Constructor
     Tree();
 
-    // Insert methods
-    void insert(int value);
-    void insert(TreeNode*& root, int value);
+    void insert(int player_id, int score);
+    TreeNode* insert(TreeNode* root, int player_id, int score);
 
-    // In-order traversal method
     void preOrder(TreeNode* root);
 
-    // AVL Rotation methods
     TreeNode* rightRotate(TreeNode* y);
     TreeNode* leftRotate(TreeNode* x);
 
-    // Get height and balance factor
     int height(TreeNode* node);
     int balanceFactor(TreeNode* node);
 
-    // Method to interact with the tree (Menu-driven)
+    TreeNode* minValueNode(TreeNode* node);
+    TreeNode* deleteNode(TreeNode* root, int player_id);
+
     void create();
 };
 
-Tree::Tree() {
-    root = nullptr;
+Tree::Tree() { root = nullptr; }
+
+void Tree::insert(int player_id, int score) {
+    root = insert(root, player_id, score);
 }
 
-// Insert method (public interface)
-void Tree::insert(int value) {
-    insert(root, value);
-}
-
-// Insert method (recursive helper)
-void Tree::insert(TreeNode*& root, int value) {
+TreeNode* Tree::insert(TreeNode* root, int player_id, int score) {
     if (root == nullptr) {
-        root = new TreeNode(value);
-        return;
+        return new TreeNode(player_id, score);
     }
 
-    if (value < root->data) {
-        insert(root->left, value);
+    if (score < root->score) {
+        root->left = insert(root->left, player_id, score);
     } else {
-        insert(root->right, value);
+        root->right = insert(root->right, player_id, score);
     }
 
-    // Update height of the ancestor node
     root->height = max(height(root->left), height(root->right)) + 1;
-
-    // Get balance factor
     int balance = balanceFactor(root);
 
-    // Left-Left Case
-    if (balance > 1 && value < root->left->data) {
-        root = rightRotate(root);
+    if (balance > 1 && score < root->left->score) {
+        return rightRotate(root);
     }
-
-    // Right-Right Case
-    else if (balance < -1 && value > root->right->data) {
-        root = leftRotate(root);
+    if (balance < -1 && score > root->right->score) {
+        return leftRotate(root);
     }
-
-    // Left-Right Case
-    else if (balance > 1 && value > root->left->data) {
+    if (balance > 1 && score > root->left->score) {
         root->left = leftRotate(root->left);
-        root = rightRotate(root);
+        return rightRotate(root);
+    }
+    if (balance < -1 && score < root->right->score) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
     }
 
-    // Right-Left Case
-    else if (balance < -1 && value < root->right->data) {
-        root->right = rightRotate(root->right);
-        root = leftRotate(root);
-    }
+    return root;
 }
 
-// In-order traversal (Left, Root, Right)
+TreeNode* Tree::deleteNode(TreeNode* root, int player_id) {
+    if (root == nullptr) return root;
+
+    if (player_id < root->player_id) {
+        root->left = deleteNode(root->left, player_id);
+    } else if (player_id > root->player_id) {
+        root->right = deleteNode(root->right, player_id);
+    } else {
+        if ((root->left == nullptr) || (root->right == nullptr)) {
+            TreeNode* temp = root->left ? root->left : root->right;
+
+            if (temp == nullptr) {
+                temp = root;
+                root = nullptr;
+            } else {
+                *root = *temp;
+            }
+
+            delete temp;
+        } else {
+            TreeNode* temp = minValueNode(root->right);
+            root->player_id = temp->player_id;
+            root->score = temp->score;
+            root->right = deleteNode(root->right, temp->player_id);
+        }
+    }
+
+    if (root == nullptr) return root;
+
+    root->height = max(height(root->left), height(root->right)) + 1;
+
+    int balance = balanceFactor(root);
+
+    if (balance > 1 && balanceFactor(root->left) >= 0)
+        return rightRotate(root);
+
+    if (balance > 1 && balanceFactor(root->left) < 0) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (balance < -1 && balanceFactor(root->right) <= 0)
+        return leftRotate(root);
+
+    if (balance < -1 && balanceFactor(root->right) > 0) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
 void Tree::preOrder(TreeNode* root) {
     if (root != nullptr) {
-        cout << root->data << " ";
+        cout << "Player ID: " << root->player_id << " - Score: " << root->score << endl;
+        preOrder(root->right);  // Displaying leaderboard in descending order
         preOrder(root->left);
-        preOrder(root->right);
     }
 }
 
-// AVL right rotation
 TreeNode* Tree::rightRotate(TreeNode* y) {
     TreeNode* x = y->left;
     TreeNode* T2 = x->right;
 
-    // Perform rotation
     x->right = y;
     y->left = T2;
 
-    // Update heights
     y->height = max(height(y->left), height(y->right)) + 1;
     x->height = max(height(x->left), height(x->right)) + 1;
 
     return x;
 }
 
-// AVL left rotation
 TreeNode* Tree::leftRotate(TreeNode* x) {
     TreeNode* y = x->right;
     TreeNode* T2 = y->left;
 
-    // Perform rotation
     y->left = x;
     x->right = T2;
 
-    // Update heights
     x->height = max(height(x->left), height(x->right)) + 1;
     y->height = max(height(y->left), height(y->right)) + 1;
 
     return y;
 }
 
-// Get height of a node
 int Tree::height(TreeNode* node) {
-    if (node == nullptr) {
-        return 0;
-    }
-    return node->height;
+    return node ? node->height : 0;
 }
 
-// Get balance factor of a node
 int Tree::balanceFactor(TreeNode* node) {
-    if (node == nullptr) {
-        return 0;
-    }
-    return height(node->left) - height(node->right);
+    return node ? height(node->left) - height(node->right) : 0;
 }
 
-// Menu-driven method to interact with the tree
+TreeNode* Tree::minValueNode(TreeNode* node) {
+    TreeNode* current = node;
+    while (current->left != nullptr)
+        current = current->left;
+    return current;
+}
+
 void Tree::create() {
-    int choice, value;
+    int choice, player_id, score;
     while (true) {
-        cout << "\n--- AVL Tree Menu ---\n";
-        cout << "1. Insert Node\n";
-        cout << "2. Display In-Order Traversal\n";
-        cout << "3. Exit\n";
+        cout << "\n--- Multiplayer Game System ---\n";
+        cout << "1. Register Player\n";
+        cout << "2. Display Leaderboard\n";
+        cout << "3. Remove Player\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice) {
             case 1:
-                cout << "Enter key to insert: ";
-                cin >> value;
-                insert(value);
-                cout << "Node inserted successfully.\n";
+                cout << "Enter Player ID and Score: ";
+                cin >> player_id >> score;
+                insert(player_id, score);
+                cout << "Player Registered Successfully.\n";
                 break;
             case 2:
-                cout << "Pre-Order Traversal: ";
+                cout << "Leaderboard:\n";
                 preOrder(root);
-                cout << endl;
                 break;
             case 3:
+                cout << "Enter Player ID to Remove: ";
+                cin >> player_id;
+                root = deleteNode(root, player_id);
+                cout << "Player Removed Successfully.\n";
+                break;
+            case 4:
                 cout << "Exiting...\n";
                 return;
             default:
