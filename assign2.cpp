@@ -26,7 +26,7 @@ public:
     void insert(int player_id, int score);
     TreeNode* insert(TreeNode* root, int player_id, int score);
 
-    void preOrder(TreeNode* root);
+    void inOrder(TreeNode* root);
 
     TreeNode* rightRotate(TreeNode* y);
     TreeNode* leftRotate(TreeNode* x);
@@ -40,7 +40,9 @@ public:
     void create();
 };
 
-Tree::Tree() { root = nullptr; }
+Tree::Tree() { 
+    root = nullptr; 
+}
 
 void Tree::insert(int player_id, int score) {
     root = insert(root, player_id, score);
@@ -79,49 +81,54 @@ TreeNode* Tree::insert(TreeNode* root, int player_id, int score) {
 }
 
 TreeNode* Tree::deleteNode(TreeNode* root, int player_id) {
-    if (root == nullptr) return root;
+    if (root == nullptr) {
+        return root;
+    }
 
     if (player_id < root->player_id) {
         root->left = deleteNode(root->left, player_id);
     } else if (player_id > root->player_id) {
         root->right = deleteNode(root->right, player_id);
     } else {
-        if ((root->left == nullptr) || (root->right == nullptr)) {
-            TreeNode* temp = root->left ? root->left : root->right;
-
-            if (temp == nullptr) {
-                temp = root;
-                root = nullptr;
-            } else {
-                *root = *temp;
-            }
-
-            delete temp;
-        } else {
-            TreeNode* temp = minValueNode(root->right);
-            root->player_id = temp->player_id;
-            root->score = temp->score;
-            root->right = deleteNode(root->right, temp->player_id);
+        if (root->left == nullptr && root->right == nullptr) {
+            delete root;
+            return nullptr;
         }
+
+        if (root->left == nullptr) {
+            TreeNode* temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == nullptr) {
+            TreeNode* temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        TreeNode* temp = minValueNode(root->right);
+        root->player_id = temp->player_id;
+        root->score = temp->score;
+        root->right = deleteNode(root->right, temp->player_id);
     }
 
-    if (root == nullptr) return root;
+    if (root == nullptr) {
+        return root;
+    }
 
     root->height = max(height(root->left), height(root->right)) + 1;
 
     int balance = balanceFactor(root);
 
-    if (balance > 1 && balanceFactor(root->left) >= 0)
+    if (balance > 1 && balanceFactor(root->left) >= 0) {
         return rightRotate(root);
-
+    }
     if (balance > 1 && balanceFactor(root->left) < 0) {
         root->left = leftRotate(root->left);
         return rightRotate(root);
     }
-
-    if (balance < -1 && balanceFactor(root->right) <= 0)
+    if (balance < -1 && balanceFactor(root->right) <= 0) {
         return leftRotate(root);
-
+    }
     if (balance < -1 && balanceFactor(root->right) > 0) {
         root->right = rightRotate(root->right);
         return leftRotate(root);
@@ -130,11 +137,11 @@ TreeNode* Tree::deleteNode(TreeNode* root, int player_id) {
     return root;
 }
 
-void Tree::preOrder(TreeNode* root) {
+void Tree::inOrder(TreeNode* root) {
     if (root != nullptr) {
+        inOrder(root->right);  // Display leaderboard in descending order
         cout << "Player ID: " << root->player_id << " - Score: " << root->score << endl;
-        preOrder(root->right);  // Displaying leaderboard in descending order
-        preOrder(root->left);
+        inOrder(root->left);
     }
 }
 
@@ -165,17 +172,26 @@ TreeNode* Tree::leftRotate(TreeNode* x) {
 }
 
 int Tree::height(TreeNode* node) {
-    return node ? node->height : 0;
+    if (node == nullptr) {
+        return 0;
+    } else {
+        return node->height;
+    }
 }
 
 int Tree::balanceFactor(TreeNode* node) {
-    return node ? height(node->left) - height(node->right) : 0;
+    if (node == nullptr) {
+        return 0;
+    } else {
+        return height(node->left) - height(node->right);
+    }
 }
 
 TreeNode* Tree::minValueNode(TreeNode* node) {
     TreeNode* current = node;
-    while (current->left != nullptr)
+    while (current->left != nullptr) {
         current = current->left;
+    }
     return current;
 }
 
@@ -190,28 +206,24 @@ void Tree::create() {
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
-            case 1:
-                cout << "Enter Player ID and Score: ";
-                cin >> player_id >> score;
-                insert(player_id, score);
-                cout << "Player Registered Successfully.\n";
-                break;
-            case 2:
-                cout << "Leaderboard:\n";
-                preOrder(root);
-                break;
-            case 3:
-                cout << "Enter Player ID to Remove: ";
-                cin >> player_id;
-                root = deleteNode(root, player_id);
-                cout << "Player Removed Successfully.\n";
-                break;
-            case 4:
-                cout << "Exiting...\n";
-                return;
-            default:
-                cout << "Invalid choice. Please try again.\n";
+        if (choice == 1) {
+            cout << "Enter Player ID and Score: ";
+            cin >> player_id >> score;
+            insert(player_id, score);
+            cout << "Player Registered Successfully.\n";
+        } else if (choice == 2) {
+            cout << "Leaderboard:\n";
+            inOrder(root);  // Corrected to display in descending order
+        } else if (choice == 3) {
+            cout << "Enter Player ID to Remove: ";
+            cin >> player_id;
+            root = deleteNode(root, player_id);
+            cout << "Player Removed Successfully.\n";
+        } else if (choice == 4) {
+            cout << "Exiting...\n";
+            return;
+        } else {
+            cout << "Invalid choice. Please try again.\n";
         }
     }
 }
