@@ -2,76 +2,72 @@
 #include <queue>
 using namespace std;
 
-int a[7][7] = {
-    {0, 1, 1, 1, 0, 0, 0},
-    {1, 0, 0, 1, 0, 0, 0},
-    {1, 0, 0, 1, 1, 0, 0},
-    {1, 1, 1, 0, 1, 0, 0},
-    {0, 0, 1, 1, 0, 1, 1},
-    {0, 0, 0, 0, 1, 0, 0},
-    {0, 0, 0, 0, 1, 0, 0}
+int graph[7][7] = {
+    {0, 1, 0, 1, 0, 0, 0},
+    {1, 0, 1, 1, 1, 0, 0},
+    {0, 1, 0, 0, 1, 1, 0},
+    {1, 1, 0, 0, 1, 0, 1},
+    {0, 1, 1, 1, 0, 1, 1},
+    {0, 0, 1, 0, 1, 0, 1},
+    {0, 0, 0, 1, 1, 1, 0}
 };
 
-void DFS(int start, int end, int visited[]){
-    int i = start;
-    if(i == end){
-        cout << i << " ";
-        cout << "\nEnd Reached (DFS)" << endl;
+void depthFirstSearch(int curr, int destination, int visited[]){
+    cout << curr << " ";
+    if(curr == destination){
+        cout << "\nReached Destination (DFS)" << endl;
         return;
     }
-    cout << i << " ";
-    visited[i] = 1;
-    for(int j = 0; j < 7; j++){
-        if(a[i][j] == 1 && visited[j] == 0){
-            DFS(j, end, visited);
+    visited[curr] = 1;
+    for(int next = 0; next < 7; next++){
+        if(graph[curr][next] && !visited[next]){
+            depthFirstSearch(next, destination, visited);
             return;
         }
     }
 }
 
-void BFS(int start, int end, int visit[]){
+void breadthFirstSearch(int start, int target, int visited[]){
     queue<int> q;
-    int i = start;
-    cout << i << " ";
-    visit[i] = 1;
-    q.push(i);
+    cout << start << " ";
+    visited[start] = 1;
+    q.push(start);
     while(!q.empty()){
-        int d = q.front();
+        int node = q.front();
         q.pop();
-        for(int j = 0; j < 7; j++){
-            if(a[d][j] == 1 && visit[j] == 0){
-                cout << j << " ";
-                visit[j] = 1;
-                if(j == end){
-                    cout << "\nEnd Reached (BFS)" << endl;
+        for(int next = 0; next < 7; next++){
+            if(graph[node][next] && !visited[next]){
+                cout << next << " ";
+                visited[next] = 1;
+                if(next == target){
+                    cout << "\nReached Destination (BFS)" << endl;
                     return;
                 }
-                q.push(j);
+                q.push(next);
             }
         }
     }
 }
 
 int main() {
-    int start, end;
-    cout << "Enter starting node (0-6): ";
-    cin >> start;
-    cout << "Enter ending node (0-6): ";
-    cin >> end;
+    int source, target;
+    cout << "Enter source node (0-6): ";
+    cin >> source;
+    cout << "Enter destination node (0-6): ";
+    cin >> target;
 
-    if(start < 0 || start >= 7 || end < 0 || end >= 7){
-        cout << "Invalid node input. Please enter nodes between 0 and 6." << endl;
+    if(source < 0 || source >= 7 || target < 0 || target >= 7){
+        cout << "Invalid input. Please enter values between 0 and 6." << endl;
         return 0;
     }
 
-    int BFSvisit[7] = {0};
-    int DFSvisit[7] = {0};
+    int visitedDFS[7] = {0};
+    int visitedBFS[7] = {0};
 
-    cout << "DFS Traversal: ";
-    DFS(start, end, DFSvisit);
-    cout << "\nBFS Traversal: ";
-    BFS(start, end, BFSvisit);
+    cout << "DFS Path: ";
+    depthFirstSearch(source, target, visitedDFS);
+    cout << "\nBFS Path: ";
+    breadthFirstSearch(source, target, visitedBFS);
 
     return 0;
 }
-
