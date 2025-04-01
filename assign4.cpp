@@ -73,7 +73,7 @@ int main(){
         cin >> startNode;
 
         primMST(graph, V, startNode);
-        cout << "Do you want to change the starting node? (1 for Yes): ";
+        cout << "Do you want to change the starting node? (0/1): ";
         cin >> ch;
     }
     while(ch == 1);
